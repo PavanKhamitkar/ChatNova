@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Full-Screen Chatbot</title>
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #6a11cb, #2575fc); /* Cool background gradient */
+            color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .chatbox {
+            width: 100%;
+            height: 100%;
+            max-width: 1000px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: fadeIn 1s ease-out;
+            padding: 20px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        #chat {
+            overflow-y: scroll;
+            flex-grow: 1;
+            padding: 20px;
+            padding-bottom: 80px; /* Extra space for message input */
+            scrollbar-width: thin;
+            scrollbar-color: #aaa #f4f4f9;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        /* User message */
+        .user-message {
+            background-color: #3498db; /* Blue for user */
+            color: white;
+            margin: 10px 0;
+            padding: 12px;
+            border-radius: 15px;
+            max-width: 75%;
+            align-self: flex-end;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Bot response */
+        .bot-message {
+            background-color: #8e44ad; /* Purple for bot */
+            color: white;
+            margin: 10px 0;
+            padding: 12px;
+            border-radius: 15px;
+            max-width: 75%;
+            align-self: flex-start;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            white-space: pre-wrap; /* Preserve line breaks and formatting */
+            word-wrap: break-word;
+        }
+
+        /* Formatting for bullet points, numbered lists, and headings in the bot's message */
+        .bot-message ul,
+        .bot-message ol {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+
+        .bot-message li {
+            margin-bottom: 5px;
+        }
+
+        .bot-message h2,
+        .bot-message h3 {
+            margin-top: 10px;
+            color: #f4f4f9;
+        }
+
+        .chatbox input,
+        .chatbox button {
+            padding: 12px;
+            border: none;
+            border-radius: 25px;
+            outline: none;
+        }
+
+        .chatbox input {
+            width: 75%;
+            margin: 20px;
+            background-color: #f0f0f0;
+            font-size: 16px;
+        }
+
+        .chatbox button {
+            width: 20%;
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .chatbox button:hover {
+            background-color: #2980b9; /* Darker blue on hover */
+        }
+
+        .read-button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: #8e44ad; /* Purple */
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .read-button:hover {
+            background-color: #9b59b6; /* Lighter purple on hover */
+        }
+
+        /* Scrollbar styling */
+        #chat::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #chat::-webkit-scrollbar-thumb {
+            background-color: #3498db;
+            border-radius: 10px;
+        }
+
+        #chat::-webkit-scrollbar-track {
+            background-color: #f4f4f9;
+            border-radius: 10px;
+        }
+
+        /* Bottom Input Box */
+        .bottom-input {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .bottom-input input {
+            width: 80%;
+            margin-right: 10px;
+        }
+
+        .bottom-input button {
+            width: 18%;
+        }
+    </style>
+</head>
+<body>
+    <div class="chatbox">
+        <div id="chat"></div>
+        <div class="bottom-input">
+            <input type="text" id="user_input" placeholder="Type your message..." autocomplete="off">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+        <button id="read-response" class="read-button" style="display: none;" onclick="readResponse()">Read Response</button>
+    </div>
+
+    <script>
+        let lastBotResponse = "";  // Store the last bot response to read it out loud
+
+        function sendMessage() {
+            const userMessage = document.getElementById('user_input').value;
+            if (userMessage.trim() === "") return;
+
+            const chatBox = document.getElementById('chat');
+            chatBox.innerHTML += `<div class="user-message">${userMessage}</div>`;
+            
+            document.getElementById('user_input').value = '';
+
+            fetch('/send_message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ question: userMessage })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const botMessage = data.response;
+                chatBox.innerHTML += `<div class="bot-message">${formatBotResponse(botMessage)}</div>`;
+                chatBox.scrollTop = chatBox.scrollHeight;  // Scroll to the bottom
+
+                // Store the bot's response for reading out loud
+                lastBotResponse = botMessage;
+
+                // Show the "Read Response" button
+                document.getElementById('read-response').style.display = 'inline-block';
+            });
+        }
+
+        function formatBotResponse(response) {
+            // This function formats the response text (e.g., handling bullet points and lists)
+            return response
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')  // Bold text (e.g., **Bold** becomes <strong>Bold</strong>)
+                .replace(/\*\s([^\n]+)/g, '<ul><li>$1</li></ul>')  // Bullet points (e.g., * Item becomes <ul><li>Item</li></ul>)
+                .replace(/\d\.\s([^\n]+)/g, '<ol><li>$1</li></ol>'); // Numbered list (e.g., 1. Item becomes <ol><li>Item</li></ol>)
+        }
+
+        // Function to read the last bot response aloud
+        function readResponse() {
+            if (lastBotResponse) {
+                let cleanResponse = cleanTextForSpeech(lastBotResponse);
+
+                // Create an utterance with the cleaned response
+                const utterance = new SpeechSynthesisUtterance(cleanResponse);
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Function to clean up text for speech synthesis
+        function cleanTextForSpeech(response) {
+            return response
+                .replace(/\*\*(.*?)\*\*/g, '$1')   // Remove **Bold** markers
+                .replace(/\*(.*?)\*/g, '$1')       // Remove *Italic* markers
+                .replace(/_(.*?)_/g, '$1')         // Remove _Italic_ markers (underscore for italics)
+                .replace(/<\/?[^>]+(>|$)/g, "")     // Remove HTML tags
+                .replace(/^\s+|\s+$/g, '')         // Trim leading/trailing spaces
+                .replace(/\n/g, ' ')               // Replace line breaks with spaces for better flow
+                .replace(/\s{2,}/g, ' ')            // Replace multiple spaces with a single space
+                .replace(/\*/g, '');               // Remove any remaining asterisks
+        }
+    </script>
+</body>
+</html>
