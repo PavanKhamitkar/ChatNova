@@ -5,7 +5,7 @@ import google.generativeai as genai
 app = Flask(__name__)
 
 # Set up the API key and configure the Gemini Pro model
-GOOGLE_API_KEY = "AIzaSyCijKCTJnI6DJwzeZ-Dc085E1gbMN4A6J8"  # Replace with your actual API key
+GOOGLE_API_KEY = ""  # Replace with your actual API key
 genai.configure(api_key=GOOGLE_API_KEY)
 model = genai.GenerativeModel("gemini-pro")
 chat = model.start_chat(history=[])
