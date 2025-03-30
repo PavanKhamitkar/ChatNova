@@ -1,12 +1,23 @@
+"""
+ChatNova - An intelligent conversational AI
+Copyright (c) 2025 Pavan Khamitkar
+Licensed under the MIT License - see LICENSE file for details
+"""
+
 from flask import Flask, render_template, request, jsonify
 import google.generativeai as genai
 import re
+from dotenv import load_dotenv
+import os
+
+# Load environment variables
+load_dotenv()
 
 # Initialize Flask app
 app = Flask(__name__)
 
 # Set up the API key and configure the Gemini Pro model
-GOOGLE_API_KEY = "AIzaSyCijKCTJnI6DJwzeZ-Dc085E1gbMN4A6J8"  # Replace with your actual API key
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 genai.configure(api_key=GOOGLE_API_KEY)
 model = genai.GenerativeModel("gemini-1.5-pro")
 chat = model.start_chat(history=[])
