@@ -77,12 +77,10 @@ python app.py
 - Custom personality traits
 - Response sentiment analysis
 
-## License
-This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## License
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Visit & Try ChatNova
-- **GitHub Repository**: [ChatNova Project](https://github.com/Ayush-Acharya01/Chat-Nova)
-- **Live Demo**: [Try ChatNova](https://ayush-acharya01.github.io/Chat-Nova/)
+- **GitHub Repository**: [ChatNova Project](https://github.com/PavanKhamitkar/ChatNova)
+- **Live Demo**: [Try ChatNova](https://chatnova-0ldf.onrender.com)
