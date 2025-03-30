@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Full-Screen Chatbot</title>
+    <title>ChatNova</title>
     <style>
         /* Basic Reset */
         * {
@@ -14,9 +14,10 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #6a11cb, #2575fc); /* Cool background gradient */
+            background: #0a0a0a; /* Solid black background */
             color: #f4f4f9;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
@@ -24,18 +25,30 @@
             overflow: hidden;
         }
 
+        .logo {
+            font-size: 2.8em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #9c27b0, #673ab7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(156, 39, 176, 0.3);
+            margin-bottom: 20px;
+            letter-spacing: 3px;
+        }
+
         .chatbox {
             width: 100%;
-            height: 100%;
+            height: 90%;
             max-width: 1000px;
-            background-color: white;
+            background-color: #141414; /* Darker background */
             border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(156, 39, 176, 0.2);
             display: flex;
             flex-direction: column;
             overflow: hidden;
             animation: fadeIn 1s ease-out;
             padding: 20px;
+            border: 1px solid #2c2c2c;
         }
 
         @keyframes fadeIn {
@@ -60,28 +73,31 @@
 
         /* User message */
         .user-message {
-            background-color: #3498db; /* Blue for user */
+            background: linear-gradient(135deg, #9c27b0, #673ab7); /* Purple gradient */
             color: white;
             margin: 10px 0;
-            padding: 12px;
-            border-radius: 15px;
+            padding: 15px 20px;
+            border-radius: 20px 20px 5px 20px;
             max-width: 75%;
             align-self: flex-end;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 15px rgba(156, 39, 176, 0.2);
+            animation: fadeIn 0.3s ease-out;
         }
 
         /* Bot response */
         .bot-message {
-            background-color: #8e44ad; /* Purple for bot */
-            color: white;
+            background: #1e1e1e; /* Dark gray for bot */
+            color: #ffffff;
             margin: 10px 0;
-            padding: 12px;
-            border-radius: 15px;
+            padding: 15px 20px;
+            border-radius: 20px 20px 20px 5px;
             max-width: 75%;
             align-self: flex-start;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid #2c2c2c;
             white-space: pre-wrap; /* Preserve line breaks and formatting */
             word-wrap: break-word;
+            animation: fadeIn 0.3s ease-out;
         }
 
         /* Formatting for bullet points, numbered lists, and headings in the bot's message */
@@ -131,16 +147,43 @@
 
         .read-button {
             margin-top: 15px;
-            padding: 10px 20px;
-            background-color: #8e44ad; /* Purple */
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #9c27b0, #673ab7);
             color: white;
             border-radius: 25px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
         .read-button:hover {
-            background-color: #9b59b6; /* Lighter purple on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(156, 39, 176, 0.3);
+        }
+
+        .stop-button {
+            margin-top: 15px;
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: none; /* Hidden by default */
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .stop-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.3);
         }
 
         /* Scrollbar styling */
@@ -149,12 +192,12 @@
         }
 
         #chat::-webkit-scrollbar-thumb {
-            background-color: #3498db;
+            background: linear-gradient(135deg, #9c27b0, #673ab7);
             border-radius: 10px;
         }
 
         #chat::-webkit-scrollbar-track {
-            background-color: #f4f4f9;
+            background-color: #1e1e1e;
             border-radius: 10px;
         }
 
@@ -162,20 +205,91 @@
         .bottom-input {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             width: 100%;
+            margin: 20px 0;
+            padding: 0 10px;
+            gap: 12px;
         }
 
         .bottom-input input {
-            width: 80%;
-            margin-right: 10px;
+            flex: 1;
+            background-color: #1e1e1e;
+            color: white;
+            border: 1px solid #2c2c2c;
+            border-radius: 12px;
+            padding: 12px 20px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            height: 48px;
+        }
+
+        .bottom-input input:focus {
+            border-color: #9c27b0;
+            outline: none;
+            box-shadow: 0 0 10px rgba(156, 39, 176, 0.2);
         }
 
         .bottom-input button {
-            width: 18%;
+            width: 80px;
+            height: 48px;
+            min-width: 48px;
+            background: linear-gradient(135deg, #9c27b0, #673ab7);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(156, 39, 176, 0.2);
+        }
+
+        .bottom-input button::before {
+            content: '';
+            display: inline-block;
+            width: 33px;
+            height: 22px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M2.01 21L23 12L2.01 3L2 10l15 2-15 2z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            transform: translateX(-1px);
+            transition: transform 0.3s ease;
+        }
+
+        .bottom-input button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(156, 39, 176, 0.3);
+            background: linear-gradient(135deg, #aa32c4, #7444c4);
+        }
+
+        .bottom-input button:hover::before {
+            transform: translateX(2px);
+        }
+
+        .bottom-input button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(156, 39, 176, 0.2);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
 <body>
+    <div class="logo">ChatNova</div>
     <div class="chatbox">
         <div id="chat"></div>
         <div class="bottom-input">
@@ -183,10 +297,29 @@
             <button onclick="sendMessage()">Send</button>
         </div>
         <button id="read-response" class="read-button" style="display: none;" onclick="readResponse()">Read Response</button>
+        <button id="stop-speaking" class="stop-button" onclick="stopSpeaking()">Stop Speaking</button>
     </div>
 
     <script>
         let lastBotResponse = "";  // Store the last bot response to read it out loud
+        let currentUtterance = null; // Store the current speech synthesis utterance
+        let femaleVoice = null; // Store the female voice
+
+        // Load voices and set the female voice
+        function loadVoices() {
+            const voices = window.speechSynthesis.getVoices();
+            femaleVoice = voices.find(voice => voice.name.includes("Female") || voice.lang.includes("en-US"));
+        }
+
+        // Wait for voices to be loaded
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+
+        // Send message when Enter key is pressed
+        document.getElementById('user_input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
 
         function sendMessage() {
             const userMessage = document.getElementById('user_input').value;
@@ -232,8 +365,33 @@
                 let cleanResponse = cleanTextForSpeech(lastBotResponse);
 
                 // Create an utterance with the cleaned response
-                const utterance = new SpeechSynthesisUtterance(cleanResponse);
-                window.speechSynthesis.speak(utterance);
+                currentUtterance = new SpeechSynthesisUtterance(cleanResponse);
+
+                // Set the voice to a female voice if available
+                if (femaleVoice) {
+                    currentUtterance.voice = femaleVoice;
+                }
+
+                // Show the "Stop Speaking" button and hide the "Read Response" button
+                document.getElementById('stop-speaking').style.display = 'inline-block';
+                document.getElementById('read-response').style.display = 'none';
+
+                // When speech ends, hide the "Stop Speaking" button and show the "Read Response" button
+                currentUtterance.onend = () => {
+                    document.getElementById('stop-speaking').style.display = 'none';
+                    document.getElementById('read-response').style.display = 'inline-block';
+                };
+
+                window.speechSynthesis.speak(currentUtterance);
+            }
+        }
+
+        // Function to stop speaking
+        function stopSpeaking() {
+            if (currentUtterance) {
+                window.speechSynthesis.cancel(); // Stop speech synthesis
+                document.getElementById('stop-speaking').style.display = 'none';
+                document.getElementById('read-response').style.display = 'inline-block';
             }
         }
 
